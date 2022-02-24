@@ -1,16 +1,15 @@
-package com.example.model;
+package com.example.demo.model;
 
 import java.util.Scanner;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import lombok.Data;
-
-@Data
+@Component
 public class ATM {
 
-	//private BankDB bank;
 	private int nominal;
+	
 	private Scanner scan;		
 
 	/**
@@ -38,4 +37,7 @@ public class ATM {
 		return input;
 	}
 
+	public ATM() {
+
+	}
 }

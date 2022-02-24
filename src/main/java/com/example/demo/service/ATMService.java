@@ -1,4 +1,4 @@
-package com.example.service;
+package com.example.demo.service;
 
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -8,15 +8,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.example.model.ATM;
-import com.example.model.Customer;
-import com.example.repository.CustomerRepository;
+import com.example.demo.model.ATM;
+import com.example.demo.model.Customer;
+import com.example.demo.repository.CustomerRepository;
 
 @Service
-@Component
 public class ATMService {
 	
-	@Autowired
 	ATM atm;
 	
 	@Autowired
@@ -176,6 +174,6 @@ public class ATMService {
 
 	public Customer findByName(String nama) throws SQLException {
 		// TODO Auto-generated method stub
-		return null;
+		return custRepository.findByNama(nama);
 	}		
 }

@@ -12,18 +12,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import com.example.model.ATM;
-import com.example.model.Customer;
-import com.example.service.ATMService;
-import com.example.service.CustomerService;
+import com.example.demo.model.ATM;
+import com.example.demo.model.Customer;
+import com.example.demo.service.ATMService;
+import com.example.demo.service.CustomerService;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages={"com.example.demo.model", "com.example.demo.repository", "com.example.demo.service"})
+//@SpringBootApplication
 public class AtmMarkvpApplication implements CommandLineRunner {
 	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
-	@Autowired(required = true)
+	@Autowired
     private ATMService atmService;
 
 	public static void main(String[] args) {
@@ -47,7 +48,7 @@ public class AtmMarkvpApplication implements CommandLineRunner {
 		Scanner scan = new Scanner(System.in);
 		ATM a = new ATM(scan);
 		
-		String strSearch = "";
+		String strSearch = "valentino";
 		Customer c = atmService.findByName(strSearch);
 		
 		// begin interface
