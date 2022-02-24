@@ -47,26 +47,20 @@ public class AtmMarkvpApplication implements CommandLineRunner {
 		// set up ATM system		
 		Scanner scan = new Scanner(System.in);
 		ATM a = new ATM(scan);
-		
-		String strSearch = "valentino";
-		Customer c = atmService.findByName(strSearch);
-		
-		// begin interface
+
 		atmService.process(a);
 		
-		/*
 		int state;
-		i.printOutput("Ketik 1 untuk lanjut, 2 untuk exit program");
+		a.printOutput("\nKetik 1 untuk lanjut, 2 untuk exit program");
 		state = scan.nextInt();
 		scan.nextLine();
+
 		while (state != 2) {
-			i.process(a);
-			i.printOutput("Ketik 1 untuk lanjut, 2 untuk exit.");
-			state = scan.nextInt();
+			atmService.process(a);
+			a.printOutput("Ketik 1 untuk lanjut, 2 untuk exit.");
+			state = scan.nextInt();	
 			scan.nextLine();
 		}
-		*/		
-
 	}
 
 }

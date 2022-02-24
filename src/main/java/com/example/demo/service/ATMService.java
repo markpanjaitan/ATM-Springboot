@@ -1,8 +1,15 @@
 package com.example.demo.service;
 
+import java.io.Serializable;
+import java.lang.StackWalker.Option;
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.Scanner;
 
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+
+import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -15,10 +22,16 @@ import com.example.demo.repository.CustomerRepository;
 @Service
 public class ATMService {
 	
+	@Autowired
 	ATM atm;
 	
 	@Autowired
 	CustomerRepository custRepository;	
+	
+	@Autowired
+	CustomerService custService;
+	
+	EntityManager enmanager;
 
 	/**
 	 * Initial process
@@ -27,39 +40,51 @@ public class ATMService {
 	 * @return ATM
 	 */
 	public void process(ATM a) {
-//		Scanner scan = new Scanner(System.in);
-//		String input = "";
-//		// Initial
-//		ui.printOutput("Halo! Ketik `login [nama]` untuk login.");
-//		// flag jika login completed
-//		boolean persist = true;
-//		// loop untuk memastikan inputan sesuai
-//		while (persist) {
-//			input += scan.nextLine();
-//			input = input.replaceAll("\\*", "");
-//
-//			String[] arrOfStr = input.split("\\s+");
-//			Boolean isLogin = arrOfStr[0].toLowerCase().equals("login");
-//			Integer arrSize = arrOfStr.length;
-//			if((arrSize != 2) || !isLogin) {
-//				input = "";
-//				ui.printOutput("Mohon cek kembali perintah yang diinput.");
-//			}else if(isLogin) {
-//				if(a.checkUser(arrOfStr[1])) {
-//					persist = false;
-//					input = "";					
-//					a.custProc(null);
-//				}else {
-//					//Create new customer
-//					persist = false;
-//					input = "";						
-//					Customer newCust = new Customer(arrOfStr[1], 0, null,null);
-//					printOutput("Nasabah " + arrOfStr[1] + " telah ditambahkan.");
-//					input = "";					
-//					//a.custProc(newCust);
-//				}
-//			}
-//		}
+		Scanner scan = new Scanner(System.in);
+		String input = "";
+		
+		// Initial
+		a.printOutput("\nHalo! Ketik `login [nama]` untuk login.");
+		
+		// flag
+		boolean persist = true;
+		// loop untuk memastikan inputan sesuai
+		while (persist) {
+			input += scan.nextLine();
+			input = input.replaceAll("\\*", "");
+
+			String[] arrOfStr = input.split("\\s+");
+			Boolean isLogin = arrOfStr[0].toLowerCase().equals("login");
+			Integer arrSize = arrOfStr.length;
+			if((arrSize != 2) || !isLogin) {
+				input = "";
+				a.printOutput("Mohon cek kembali perintah yang diinput.");
+			}else if(isLogin) {
+				try {
+					Customer cust = this.findByName(arrOfStr[1]);
+					if(cust == null) {
+						//Create new customer
+						persist = false;
+						input = "";						
+						Customer newCust = new Customer();
+						newCust.setNama(arrOfStr[1]);
+						newCust.setBalance(0);
+						newCust = custRepository.save(newCust);
+						a.printOutput(arrOfStr[1].toString() + " telah ditambahkan.");
+						input = "";					
+						custProc(newCust, a);											
+					}else {
+						persist = false;
+						input = "";
+						custProc(cust, a);	
+					}					
+				}catch(Exception e) {
+					atm.printOutput(e.toString());
+					input = "";
+					persist = false;
+				}
+			}
+		}
 	}	
 
 	/**
@@ -69,85 +94,107 @@ public class ATMService {
 	 * @return boolean : if matches
 	 */
 	public boolean checkUser(String namaCustomer) {
-		//return bank.findAccount(namaCustomer);
-		return false; //masi ngaco
+		try {
+			if(findByName(namaCustomer) != null) {
+				return true;
+			}else {
+				return false; 
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			return false;
+		}
 	}
 	
 	/**
 	 * Customer processor
 	 */
-	public void custProc(Customer cust) {
-//		// flag input ulang
-//		boolean lanjut = true;
-//
-//		Customer c = new Customer();
-//		if (cust != null) {
-//			c = cust;
-//		}else {
-//			
-//		}
-//		interf.printOutput("Hello, " + c.getNama() + "!");
-//		interf.printOutput("Your balance is $" + c.getBalance());
-//
-//		while (lanjut) {
-//			lanjut = false;
-//			//interf.printOutput("\nKetik `deposit [nominal]` untuk Deposit" + "\n`withdraw [nominal]` untuk Withdraw"
-//			//		+ "\n`transfer [nama] [nominal]` untuk Withdraw" + "\n`logout` untuk Exit");
-//			String input = interf.custInputStr();
-//
-//			try {
-//				String[] arrayStr = input.split("\\s+");
-//				String strCmd = arrayStr[0].toLowerCase();
-//				Integer nominal = Integer.parseInt(arrayStr[1]);
-//
-//				int arrSize = arrayStr.length;
-//				Boolean isValidCommand = false;
-//				isValidCommand = strCmd.equals("deposit") || strCmd.equals("withdraw") || strCmd.equals("transfer")
-//						|| strCmd.equals("logout");
-//
-//				if ((arrSize != 2) || !isValidCommand) {
-//					interf.printOutput("Invalid Command.."
-//							+ "\n\nKetik `deposit [nominal]` untuk Deposit\" + \"\\n`withdraw [nominal]` untuk Withdraw"
-//							+ "\n`transfer [nama] [nominal]` untuk Withdraw\" + \"\\n`logout` untuk Exit");
-//					input = interf.custInputStr();
-//					lanjut = true;
-//				} else {
-//					switch (strCmd) {
-//					// withdraw
-//					case "withdraw":
-//						transact(c, 1, nominal);
-//						break;
-//					// deposit
-//					case "deposit":
-//						transact(c, 2, nominal);
-//						break;
-//					// transfer
-//					// case "transer":
-//					// transfer(c);
-//					// break;
-//					// exit
-//					case "logout":
-//						interf.printOutput("Goodbye, " + c.getNama() + "!");
-//						break;
-//					default:
-//						interf.printOutput("Invalid Command.."
-//								+ "\n\nKetik `deposit [nominal]` untuk Deposit\" + \"\\n`withdraw [nominal]` untuk Withdraw"
-//								+ "\n`transfer [nama] [nominal]` untuk Withdraw\" + \"\\n`logout` untuk Exit");
-//						input = interf.custInputStr();
-//						lanjut = true;
-//						break;
-//					}
-//				}				
-//			}catch(Exception e){
-//				input = "";
-//				interf.printOutput("Error : " + e.toString()
-//						+ "\n\nKetik `deposit [nominal]` untuk Deposit\" + \"\n`withdraw [nominal]` untuk Withdraw"
-//						+ "\n`transfer [nama] [nominal]` untuk Withdraw\" + \"\n`logout` untuk Exit");
-//				//input = interf.custInputStr();
-//				lanjut = true;				
-//			}
-//
-//		}
+	public void custProc(Customer cust, ATM atm){	
+		Scanner scan = new Scanner(System.in);		
+		// flag
+		boolean lanjut = true;
+
+		atm.printOutput("Hello, " + cust.getNama() + "!");
+		atm.printOutput("Your balance is $" + cust.getBalance());
+
+		while (lanjut) {
+			String input = "";			
+			atm.printOutput("\nKetik `deposit [nominal]` untuk Deposit" + "\n`withdraw [nominal]` untuk Withdraw"
+					+ "\n`transfer [nama] [nominal]` untuk Withdraw" + "\n`logout` untuk Exit");
+			input = atm.custInputStr();
+
+			try {
+				String[] arrayStr = input.split("\\s+");
+				int arrSize = arrayStr.length;
+				String strCmd = "";
+				Integer nominal = null;
+				Boolean isValidCommand = false;				
+				if (arrSize == 2){
+					strCmd = arrayStr[0].toLowerCase();
+					nominal = Integer.parseInt(arrayStr[1]);
+
+					isValidCommand = strCmd.equals("deposit") || strCmd.equals("withdraw") || strCmd.equals("transfer")
+							|| strCmd.equals("logout");
+				}else if(arrSize == 1){
+					strCmd = arrayStr[0].toLowerCase();
+					if(strCmd.equals("logout")) {
+						isValidCommand = true;					
+					}
+				}else {
+					atm.printOutput("Invalid Command.."
+							+ "\nKetik `deposit [nominal]` untuk Deposit" + "\n`withdraw [nominal]` untuk Withdraw"
+									+ "\n`transfer [nama] [nominal]` untuk Withdraw" + "\n`logout` untuk Exit");
+					input = atm.custInputStr();
+					lanjut = true;					
+				}
+
+				if(isValidCommand) {
+					switch (strCmd) {
+					// withdraw
+					case "withdraw":
+						transact(cust, 1, nominal);
+						input = "";
+						break;
+					// deposit
+					case "deposit":
+						transact(cust, 2, nominal);
+						input = "";
+						break;
+					// transfer
+					// case "transer":
+					// transfer(c);
+					// break;
+					// exit
+					case "logout":
+						lanjut = false;
+						input = "";
+						atm.printOutput("Goodbye, " + cust.getNama() + "!");
+						break;
+					default:
+						atm.printOutput("Invalid Command.."
+								+ "\nKetik `deposit [nominal]` untuk Deposit" + "\n`withdraw [nominal]` untuk Withdraw"
+										+ "\n`transfer [nama] [nominal]` untuk Withdraw" + "\n`logout` untuk Exit");
+						input = atm.custInputStr();
+						lanjut = true;
+						break;
+					}					
+				}else {
+					atm.printOutput("Invalid Command.."
+							+ "\nKetik `deposit [nominal]` untuk Deposit" + "\n`withdraw [nominal]` untuk Withdraw"
+									+ "\n`transfer [nama] [nominal]` untuk Withdraw" + "\n`logout` untuk Exit");
+					input = atm.custInputStr();
+					lanjut = true;					
+				}			
+			}catch(Exception e){
+				input = "";
+				atm.printOutput("Error : " + e.toString()
+						+ "\nKetik `deposit [nominal]` untuk Deposit\" + \"\n`withdraw [nominal]` untuk Withdraw"
+						+ "\n`transfer [nama] [nominal]` untuk Withdraw\" + \"\n`logout` untuk Exit");
+				//input = interf.custInputStr();
+				lanjut = true;			
+			}
+
+		}
 	}	
 	
 	/**
@@ -159,21 +206,30 @@ public class ATMService {
 	private void transact(Customer c, int mode, Integer nominal) {
 		boolean persist = true;
 
-//		// mode 1 = withdraw, 2 = deposit
-//		if(mode == 1) {
-//			if (c.getBalance() < nominal) {
-//				interf.printOutput("Not enough balance.");
-//				nominal = interf.custInput();
-//			}
-//		}else {
-//			c.updateBalance(mode, nominal);
-//		}
-//		
-//		interf.printOutput("\nYour balance is $" + c.getBalance());
+		// mode 1 = withdraw, 2 = deposit
+		if(mode == 1) {
+			if (c.getBalance() < nominal) {
+				atm.printOutput("Not enough balance.");
+			}else {
+				custService.updateBalance(c, mode, nominal);
+			}
+		}else {
+			custService.updateBalance(c, mode, nominal);
+		}
+		atm.printOutput("\nHello, " + c.getNama() + "!");
+		atm.printOutput("Your balance is now $" + c.getBalance());
 	}
 
 	public Customer findByName(String nama) throws SQLException {
 		// TODO Auto-generated method stub
 		return custRepository.findByNama(nama);
 	}		
+	
+	public boolean exists(Customer cust, String nama) {
+		   try {
+		      return enmanager.getReference(Entity.class, nama) != null;
+		   } catch (Exception e) {
+		      return false;
+		   }
+	}
 }

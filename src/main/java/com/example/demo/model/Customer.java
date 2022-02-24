@@ -20,13 +20,13 @@ import lombok.Setter;
 public class Customer {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
 	private String nama;
-	private Double balance;
+	private Integer balance;
 	private Integer owed_to_id;
-	private Double owed_nominal;
+	private Integer owed_nominal;
 
 	public int getId() {
 		return id;
@@ -44,11 +44,11 @@ public class Customer {
 		this.nama = nama;
 	}
 
-	public Double getBalance() {
+	public Integer getBalance() {
 		return balance;
 	}
 
-	public void setBalance(Double balance) {
+	public void setBalance(Integer balance) {
 		this.balance = balance;
 	}
 
@@ -60,11 +60,11 @@ public class Customer {
 		this.owed_to_id = owed_to_id;
 	}
 
-	public Double getOwed_nominal() {
+	public Integer getOwed_nominal() {
 		return owed_nominal;
 	}
 
-	public void setOwed_nominal(Double owed_nominal) {
+	public void setOwed_nominal(Integer owed_nominal) {
 		this.owed_nominal = owed_nominal;
 	}
 
@@ -96,7 +96,7 @@ public class Customer {
 				+ ", owed_nominal=" + owed_nominal + "]";
 	}
 
-	public Customer(String nama, Double balance, Integer owed_to_id, Double owed_nominal) {
+	public Customer(String nama, Integer balance, Integer owed_to_id, Integer owed_nominal) {
 		this.nama = nama;
 		this.balance = balance;
 		this.owed_to_id = owed_to_id;
