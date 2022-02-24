@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ public class CustomerService {
 	@param mode : fungsi yg diinginkan (1 for withdraw, 2 for deposit)
 	@param amount : jumlah yg ditransfer
 	*/	
+	@Transactional(rollbackOn = Exception.class)
 	public void updateBalance(Customer c, int mode, int nominal) {
 		Integer balance = c.getBalance();
 		Integer hutangKe = c.getOwed_to_id();
@@ -29,44 +32,50 @@ public class CustomerService {
 		Integer autoPotong = 0;
 		Integer sisaHutang = null;
 		
-		// 1 = withdraw
-		if (mode == withdraw)
-			balance = balance - nominal;
-		else
+		try {
+			// 1 = withdraw
+			if (mode == withdraw)
+				balance = balance - nominal;
+			else
 			// 2 = deposit
-			balance = balance + nominal;
-		c.setBalance(balance);
-		
-		// jika punya hutang
-		if(hutangKe != null) {
-			if(c.getBalance() > 0) {
-				if((c.getBalance() - nominalHutang) <= 0) {
-					autoPotong = nominalHutang - c.getBalance();
-					sisaHutang = Math.abs(c.getBalance() - nominalHutang);
+				balance = balance + nominal;
+			c.setBalance(balance);
+			
+			// jika punya hutang
+			if(hutangKe != null) {
+				if(c.getBalance() > 0) {
+					if((c.getBalance() - nominalHutang) <= 0) {
+						autoPotong = nominalHutang - c.getBalance();
+						sisaHutang = Math.abs(c.getBalance() - nominalHutang);
+						
+						c.setBalance(0);
+						c.setOwed_to_nominal(sisaHutang);
+						//custRepo.save(c);
+					}else {
+						autoPotong = nominalHutang;
+						sisaHutang = 0;	
+						
+						c.setBalance(c.getBalance() - nominalHutang);
+						c.setOwed_to_id(null);
+						c.setOwed_to_nominal(null);
+						//custRepo.save(c);					
+					}			
 					
-					c.setBalance(0);
-					c.setOwed_to_nominal(sisaHutang);
-					custRepo.save(c);
-				}else {
-					autoPotong = nominalHutang;
-					sisaHutang = 0;	
-					
-					c.setBalance(c.getBalance() - nominalHutang);
-					c.setOwed_to_id(null);
-					c.setOwed_to_nominal(null);
-					custRepo.save(c);					
-				}			
-				
-				Customer c2 = custRepo.findById2(hutangKe);
-				c2.setBalance(c2.getBalance() + nominalHutang);
-				c2.setKeterangan("Owed $" + autoPotong + " from " + c.getNama());
-				custRepo.save(c2);
+					Customer c2 = custRepo.findById2(hutangKe);
+					c2.setBalance(c2.getBalance() + nominalHutang);
+					c2.setKeterangan("Owed $" + autoPotong + " from " + c.getNama());
+					custRepo.save(c2);
+				}
 			}
+			custRepo.save(c);
+			
+		}catch(Exception e) {
+			e.printStackTrace();
 		}
-		
-		custRepo.save(c);
+
 	}
 	
+	@Transactional
 	public String transfer(Customer pengirim, Customer penerima, Integer nominal, String keterangan) {
 		
 		Integer saldoPengirim = pengirim.getBalance();		
@@ -75,37 +84,47 @@ public class CustomerService {
 		String str1 = "", str2 = "", str3 = "", str4 = "";
 		Integer hutang = null;
 		
-		str1 = "\nTransferred $" + nominal + " to " + penerima.getNama();
-		str2 = "\nYour balance is $" + pengirim.getBalance();
-		if((saldoPengirim - nominal) < 0) {
-			hutang = Math.abs(saldoPengirim - nominal);
-			str3 = "\nOwed $" + hutang + " to " + penerima.getNama();
-			str4 = "\nOwed $" + hutang + " from " + pengirim.getNama();
-			
-			pengirim.setOwed_to_id(penerima.getId());
-			pengirim.setOwed_to_nominal(nominal);
-			custRepo.save(pengirim);
-			
-			penerima.setBalance(penerima.getBalance() + (nominal - saldoPengirim));
-			penerima.setKeterangan(str4);
-			custRepo.save(pengirim);
+		try {
+			str1 = "\nTransferred $" + nominal + " to " + penerima.getNama();
+			str2 = "\nYour balance is $" + pengirim.getBalance();
+			if((saldoPengirim - nominal) < 0) {
+				hutang = Math.abs(saldoPengirim - nominal);
+				str3 = "\nOwed $" + hutang + " to " + penerima.getNama();
+				str4 = "\nOwed $" + hutang + " from " + pengirim.getNama();
+				
+				pengirim.setOwed_to_id(penerima.getId());
+				pengirim.setOwed_to_nominal(nominal);
+				custRepo.save(pengirim);
+				
+				penerima.setBalance(penerima.getBalance() + (nominal - saldoPengirim));
+				penerima.setKeterangan(str4);
+				custRepo.save(pengirim);
+			}
+					
+		}catch(Exception e) {
+			e.printStackTrace();
 		}
-		
-		return (str1 + str2 + str3 + str4);
+		return (str1 + str2 + str3 + str4);	
 	}	
 	
+	@Transactional
 	public String cekHutangPiutang(Customer c) {
 		
 		String reply = "";
-		if(c.getOwed_to_id() != null){
-			Customer ygDihutangi = custRepo.findById2(c.getOwed_to_id());
-			reply = "Owed $" + c.getOwed_to_nominal() + " to " + ygDihutangi.getNama();
+		try {
+			if(c.getOwed_to_id() != null){
+				Customer ygDihutangi = custRepo.findById2(c.getOwed_to_id());
+				reply = "Owed $" + c.getOwed_to_nominal() + " to " + ygDihutangi.getNama();
+			}
+			if(c.getKeterangan() != null) {
+				reply = c.getKeterangan();
+				c.setKeterangan(null);
+				custRepo.save(c);
+			}			
+		}catch(Exception e) {
+			e.printStackTrace();
 		}
-		if(c.getKeterangan() != null) {
-			reply = c.getKeterangan();
-			c.setKeterangan(null);
-			custRepo.save(c);
-		}
+
 		return reply;
 	}
 	

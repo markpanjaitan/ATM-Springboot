@@ -116,7 +116,10 @@ public class ATMService {
 
 		atm.printOutput("Hello, " + cust.getNama() + "!");
 		atm.printOutput("Your balance is $" + cust.getBalance());
-		atm.printOutput(custService.cekHutangPiutang(cust));
+		String cekHutangPiutang = custService.cekHutangPiutang(cust);
+		if(cekHutangPiutang.length() > 1) {
+			atm.printOutput(cekHutangPiutang);
+		}
 
 		while (lanjut) {
 			String input = "";			
