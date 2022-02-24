@@ -118,6 +118,7 @@ public class CustomerService {
 			}else {
 				hutang = 0;
 			
+				pengirim.setBalance(pengirim.getBalance() - nominal);
 				pengirim.setOwed_to_id(null);
 				pengirim.setOwed_to_nominal(null);
 				custRepo.save(pengirim);

@@ -175,6 +175,7 @@ public class ATMService {
 					// transfer
 					case "transfer":
 						transfer(cust, custPenerima, nominal);
+						input = "";
 						break;
 					// exit
 					case "logout":
