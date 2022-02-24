@@ -16,8 +16,8 @@ AUTO_INCREMENT=6
 ;
 
 
-INSERT INTO `customer` (`id`, `nama`, `balance`, `owed_to_id`, `owed_to_nominal`, `keterangan`) VALUES (1, 'valentino', 5066000, NULL, NULL, NULL);
+INSERT INTO `customer` (`id`, `nama`, `balance`, `owed_to_id`, `owed_to_nominal`, `keterangan`) VALUES (1, 'valentino', 166000, NULL, NULL, 'Owed $100000 from abet');
 INSERT INTO `customer` (`id`, `nama`, `balance`, `owed_to_id`, `owed_to_nominal`, `keterangan`) VALUES (2, 'donny', 605000, NULL, NULL, NULL);
 INSERT INTO `customer` (`id`, `nama`, `balance`, `owed_to_id`, `owed_to_nominal`, `keterangan`) VALUES (3, 'bayu', 1200000, 2, 500000, NULL);
-INSERT INTO `customer` (`id`, `nama`, `balance`, `owed_to_id`, `owed_to_nominal`, `keterangan`) VALUES (4, 'abet', 440000, 1, 100000, NULL);
-INSERT INTO `customer` (`id`, `nama`, `balance`, `owed_to_id`, `owed_to_nominal`, `keterangan`) VALUES (5, 'vincent', 550000, NULL, NULL, NULL);
+INSERT INTO `customer` (`id`, `nama`, `balance`, `owed_to_id`, `owed_to_nominal`, `keterangan`) VALUES (4, 'abet', 820000, NULL, NULL, NULL);
+INSERT INTO `customer` (`id`, `nama`, `balance`, `owed_to_id`, `owed_to_nominal`, `keterangan`) VALUES (5, 'vincent', 550000, 3, 250000, NULL);
