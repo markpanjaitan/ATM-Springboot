@@ -94,6 +94,7 @@ public class CustomerService {
 	@Transactional
 	public String transfer(Customer pengirim, Customer penerima, Integer nominal) {
 		
+		String reply = "";
 		Integer saldoPengirim = pengirim.getBalance();		
 		Integer saldoPenerima = penerima.getBalance();
 		
@@ -105,6 +106,8 @@ public class CustomerService {
 			str2 = "\nYour balance is $" + (pengirim.getBalance() - nominal);
 			if((saldoPengirim - nominal) <= 0) {
 				hutang = Math.abs(saldoPengirim - nominal);
+				str1 = "\nTransferred $" + saldoPengirim + " to " + penerima.getNama();
+				str2 = "\nYour balance is $0";				
 				str3 = "\nOwed $" + hutang + " to " + penerima.getNama();
 				str4 = "\nOwed $" + hutang + " from " + pengirim.getNama();
 				
@@ -117,6 +120,8 @@ public class CustomerService {
 				custRepo.save(pengirim);
 			}else {
 				hutang = 0;
+				str1 = "\nTransferred $" + nominal + " to " + penerima.getNama();
+				str2 = "\nYour balance is $" + (pengirim.getBalance() - nominal);					
 			
 				pengirim.setBalance(pengirim.getBalance() - nominal);
 				pengirim.setOwed_to_id(null);
@@ -131,7 +136,8 @@ public class CustomerService {
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		return (str1 + str2 + str3 + str4);	
+		reply = str1 + str2 + str3;
+		return reply;
 	}	
 	
 	@Transactional

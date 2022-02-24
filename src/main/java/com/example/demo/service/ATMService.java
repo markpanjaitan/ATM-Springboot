@@ -244,7 +244,9 @@ public class ATMService {
 		   }
 	}
 	
-	public String transfer(Customer pengirim, Customer penerima, int nominal) {
-		return custService.transfer(pengirim, penerima, nominal);
+	public void transfer(Customer pengirim, Customer penerima, int nominal) {
+		String reply = custService.transfer(pengirim, penerima, nominal);
+		
+		atm.printOutput(reply);
 	}	
 }
