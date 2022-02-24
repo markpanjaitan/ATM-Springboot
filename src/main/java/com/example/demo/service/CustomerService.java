@@ -111,6 +111,7 @@ public class CustomerService {
 				str3 = "\nOwed $" + hutang + " to " + penerima.getNama();
 				str4 = "\nOwed $" + hutang + " from " + pengirim.getNama();
 				
+				pengirim.setBalance(0);
 				pengirim.setOwed_to_id(penerima.getId());
 				pengirim.setOwed_to_nominal(nominal);
 				custRepo.save(pengirim);
