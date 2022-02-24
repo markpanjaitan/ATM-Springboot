@@ -41,7 +41,7 @@ public class CustomerService {
 				balance = balance + nominal;
 			c.setBalance(balance);
 			
-			// jika punya hutang
+			// jika punya hutang maka otomatis terpotong (bayar hutang)
 			if(hutangKe != null) {
 				if(c.getBalance() > 0) {
 					if((c.getBalance() - nominalHutang) <= 0) {

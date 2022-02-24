@@ -123,8 +123,7 @@ public class ATMService {
 
 		while (lanjut) {
 			String input = "";			
-			atm.printOutput("\nKetik `deposit [nominal]` untuk Deposit" + "\n`withdraw [nominal]` untuk Withdraw"
-					+ "\n`transfer [nama] [nominal]` untuk Withdraw" + "\n`logout` untuk Exit");
+			atm.printOutput("\nCommands : `deposit [nominal]`,`withdraw [nominal]`,`transfer [nama] [nominal]`,`logout`");
 			input = atm.custInputStr();
 
 			try {
@@ -146,8 +145,7 @@ public class ATMService {
 					}
 				}else {
 					atm.printOutput("Invalid Command.."
-							+ "\nKetik `deposit [nominal]` untuk Deposit" + "\n`withdraw [nominal]` untuk Withdraw"
-									+ "\n`transfer [nama] [nominal]` untuk Withdraw" + "\n`logout` untuk Exit");
+							+ "\nCommands : `deposit [nominal]`,`withdraw [nominal]`,`transfer [nama] [nominal]`,`logout`");
 					input = atm.custInputStr();
 					lanjut = true;					
 				}
@@ -176,24 +174,21 @@ public class ATMService {
 						break;
 					default:
 						atm.printOutput("Invalid Command.."
-								+ "\nKetik `deposit [nominal]` untuk Deposit" + "\n`withdraw [nominal]` untuk Withdraw"
-										+ "\n`transfer [nama] [nominal]` untuk Withdraw" + "\n`logout` untuk Exit");
+								+ "\nCommands : `deposit [nominal]`,`withdraw [nominal]`,`transfer [nama] [nominal]`,`logout`");
 						input = atm.custInputStr();
 						lanjut = true;
 						break;
 					}					
 				}else {
 					atm.printOutput("Invalid Command.."
-							+ "\nKetik `deposit [nominal]` untuk Deposit" + "\n`withdraw [nominal]` untuk Withdraw"
-									+ "\n`transfer [nama] [nominal]` untuk Withdraw" + "\n`logout` untuk Exit");
+							+ "\nCommands : `deposit [nominal]`,`withdraw [nominal]`,`transfer [nama] [nominal]`,`logout`");
 					input = atm.custInputStr();
 					lanjut = true;					
 				}			
 			}catch(Exception e){
 				input = "";
 				atm.printOutput("Error : " + e.toString()
-						+ "\nKetik `deposit [nominal]` untuk Deposit\" + \"\n`withdraw [nominal]` untuk Withdraw"
-						+ "\n`transfer [nama] [nominal]` untuk Withdraw\" + \"\n`logout` untuk Exit");
+						+ "\nCommands : `deposit [nominal]`,`withdraw [nominal]`,`transfer [nama] [nominal]`,`logout`");
 				//input = interf.custInputStr();
 				lanjut = true;			
 			}
