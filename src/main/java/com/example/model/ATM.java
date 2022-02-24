@@ -1,17 +1,24 @@
-package com.example.domain;
+package com.example.model;
 
 import java.util.Scanner;
 
-public class ATMInterface {
+import org.springframework.stereotype.Component;
 
-	private Scanner scan;
+import lombok.Data;
+
+@Data
+public class ATM {
+
+	//private BankDB bank;
+	private int nominal;
+	private Scanner scan;		
 
 	/**
 	 * Construct object interface
 	 * 
 	 * @param scan : scanner input
 	 */
-	public ATMInterface(Scanner aScan) {
+	public ATM(Scanner aScan) {
 		scan = aScan;
 	}
 
@@ -30,4 +37,5 @@ public class ATMInterface {
 		String input = scan.nextLine();
 		return input;
 	}
+
 }

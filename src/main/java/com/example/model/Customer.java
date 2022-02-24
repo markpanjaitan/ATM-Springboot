@@ -1,4 +1,4 @@
-package com.example.domain;
+package com.example.model;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,10 +9,12 @@ import java.util.Objects;
 
 import javax.persistence.Entity;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Data
 @Entity
 @Table(name = "customer")
 public class Customer {

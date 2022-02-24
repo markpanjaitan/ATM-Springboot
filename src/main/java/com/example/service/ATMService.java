@@ -1,26 +1,26 @@
-package service;
+package com.example.service;
 
 import java.sql.SQLException;
 import java.util.Scanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.example.domain.ATM;
-import com.example.domain.ATMInterface;
-import com.example.domain.Customer;
-
-import repository.CustomerRepository;
+import com.example.model.ATM;
+import com.example.model.Customer;
+import com.example.repository.CustomerRepository;
 
 @Service
-@Validated
-public class ATMServiceImpl implements ATMService {
+@Component
+public class ATMService {
 	
 	@Autowired
-	private ATMInterface ui;
+	ATM atm;
 	
-	private CustomerRepository custRepository;	
+	@Autowired
+	CustomerRepository custRepository;	
 
 	/**
 	 * Initial process
@@ -174,7 +174,6 @@ public class ATMServiceImpl implements ATMService {
 //		interf.printOutput("\nYour balance is $" + c.getBalance());
 	}
 
-	@Override
 	public Customer findByName(String nama) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;

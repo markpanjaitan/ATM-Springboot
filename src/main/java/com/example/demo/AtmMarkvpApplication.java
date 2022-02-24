@@ -5,15 +5,17 @@ import java.util.Scanner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
-import com.example.domain.ATM;
-import com.example.domain.ATMInterface;
-import com.example.domain.Customer;
-
-import service.ATMService;
-import service.CustomerService;
+import com.example.model.ATM;
+import com.example.model.Customer;
+import com.example.service.ATMService;
+import com.example.service.CustomerService;
 
 @SpringBootApplication
 public class AtmMarkvpApplication implements CommandLineRunner {
@@ -21,8 +23,8 @@ public class AtmMarkvpApplication implements CommandLineRunner {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
-	@Autowired
-    private ATMService service;
+	@Autowired(required = true)
+    private ATMService atmService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(AtmMarkvpApplication.class, args);
@@ -46,10 +48,10 @@ public class AtmMarkvpApplication implements CommandLineRunner {
 		ATM a = new ATM(scan);
 		
 		String strSearch = "";
-		Customer c = service.findByName(strSearch);
+		Customer c = atmService.findByName(strSearch);
 		
 		// begin interface
-		service.process(a);
+		atmService.process(a);
 		
 		/*
 		int state;
