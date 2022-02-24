@@ -72,7 +72,7 @@ public class ATMService {
 						newCust = custRepository.save(newCust);
 						a.printOutput(arrOfStr[1].toString() + " telah ditambahkan.");
 						input = "";					
-						custProc(newCust, a);											
+						custProc(newCust, a);
 					}else {
 						persist = false;
 						input = "";
@@ -116,6 +116,7 @@ public class ATMService {
 
 		atm.printOutput("Hello, " + cust.getNama() + "!");
 		atm.printOutput("Your balance is $" + cust.getBalance());
+		atm.printOutput(custService.cekHutangPiutang(cust));
 
 		while (lanjut) {
 			String input = "";			
@@ -232,4 +233,8 @@ public class ATMService {
 		      return false;
 		   }
 	}
+	
+	public String transfer(Customer pengirim, Customer penerima, int amount, int type) {
+		return custService.transfer(pengirim, penerima, type, null);
+	}	
 }
