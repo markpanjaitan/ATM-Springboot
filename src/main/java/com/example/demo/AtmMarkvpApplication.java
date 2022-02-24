@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.model.ATM;
-import com.example.demo.model.Customer;
 import com.example.demo.service.ATMService;
 import com.example.demo.service.CustomerService;
 
@@ -21,8 +20,8 @@ import com.example.demo.service.CustomerService;
 //@SpringBootApplication
 public class AtmMarkvpApplication implements CommandLineRunner {
 	
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
+	//@Autowired
+	//private JdbcTemplate jdbcTemplate;
 	
 	@Autowired
     private ATMService atmService;

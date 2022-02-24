@@ -25,12 +25,13 @@ public class CustomerService {
 	@param amount : jumlah yg ditransfer
 	*/	
 	@Transactional(rollbackOn = Exception.class)
-	public void updateBalance(Customer c, int mode, int nominal) {
+	public String updateBalance(Customer c, int mode, int nominal) {
 		Integer balance = c.getBalance();
 		Integer hutangKe = c.getOwed_to_id();
 		Integer nominalHutang = c.getOwed_to_nominal();
 		Integer autoPotong = 0;
 		Integer sisaHutang = null;
+		String reply="", str1="", str2="", str3 = "";
 		
 		try {
 			// 1 = withdraw
@@ -65,14 +66,29 @@ public class CustomerService {
 					c2.setBalance(c2.getBalance() + nominalHutang);
 					c2.setKeterangan("Owed $" + autoPotong + " from " + c.getNama());
 					custRepo.save(c2);
+					
+					//Transferred $30 to Alice
+					str3 = "\nTransferred $" + autoPotong + " to " + c2.getNama();					
 				}
+
+			}
+			
+			//atm.printOutput("\nHello, " + c.getNama() + "!");
+			//atm.printOutput("Your balance is now $" + c.getBalance());	
+			str1 = "\nHello, " + c.getNama() + "!";
+			str2 = "\nYour balance is $" + c.getBalance();
+			
+			if(str3.length() > 1) {
+				reply = str3 + str1 + str2;
+			}else {
+				reply = str1 + str2;
 			}
 			custRepo.save(c);
 			
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-
+		return reply;
 	}
 	
 	@Transactional

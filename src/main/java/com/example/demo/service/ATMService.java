@@ -1,15 +1,11 @@
 package com.example.demo.service;
 
-import java.io.Serializable;
-import java.lang.StackWalker.Option;
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.Scanner;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 
-import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -61,7 +57,7 @@ public class ATMService {
 				a.printOutput("Mohon cek kembali perintah yang diinput.");
 			}else if(isLogin) {
 				try {
-					Customer cust = this.findByName(arrOfStr[1]);
+					Customer cust = this.findByNama(arrOfStr[1]);
 					if(cust == null) {
 						//Create new customer
 						persist = false;
@@ -85,6 +81,7 @@ public class ATMService {
 				}
 			}
 		}
+		//scan.close();
 	}	
 
 	/**
@@ -95,7 +92,7 @@ public class ATMService {
 	 */
 	public boolean checkUser(String namaCustomer) {
 		try {
-			if(findByName(namaCustomer) != null) {
+			if(findByNama(namaCustomer) != null) {
 				return true;
 			}else {
 				return false; 
@@ -194,6 +191,7 @@ public class ATMService {
 			}
 
 		}
+		//scan.close();
 	}	
 	
 	/**
@@ -203,23 +201,23 @@ public class ATMService {
 	 * @param mode indicates dep or withd
 	 */
 	private void transact(Customer c, int mode, Integer nominal) {
-		boolean persist = true;
+		String reply = "";
 
 		// mode 1 = withdraw, 2 = deposit
 		if(mode == 1) {
 			if (c.getBalance() < nominal) {
 				atm.printOutput("Not enough balance.");
 			}else {
-				custService.updateBalance(c, mode, nominal);
+				reply = custService.updateBalance(c, mode, nominal);
 			}
 		}else {
-			custService.updateBalance(c, mode, nominal);
+			reply = custService.updateBalance(c, mode, nominal);
 		}
-		atm.printOutput("\nHello, " + c.getNama() + "!");
-		atm.printOutput("Your balance is now $" + c.getBalance());
+		
+		atm.printOutput(reply);
 	}
 
-	public Customer findByName(String nama) throws SQLException {
+	public Customer findByNama(String nama) throws SQLException {
 		// TODO Auto-generated method stub
 		return custRepository.findByNama(nama);
 	}		
