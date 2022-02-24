@@ -119,30 +119,43 @@ public class ATMService {
 		}
 
 		while (lanjut) {
-			String input = "";			
-			atm.printOutput("\nCommands : `deposit [nominal]`,`withdraw [nominal]`,`transfer [nama] [nominal]`,`logout`");
+			String input = "", strError = "";			
+			atm.printOutput("\nCommands : `deposit [nominal]`,`withdraw [nominal]`,`transfer [nama] [nominal]`,`logout`.");
 			input = atm.custInputStr();
 
 			try {
 				String[] arrayStr = input.split("\\s+");
 				int arrSize = arrayStr.length;
-				String strCmd = "";
+				String strCmd = "", strNamaPenerima = null;
 				Integer nominal = null;
-				Boolean isValidCommand = false;				
+				Boolean isValidCommand = false;
+				Customer custPenerima = new Customer();
+						
 				if (arrSize == 2){
 					strCmd = arrayStr[0].toLowerCase();
 					nominal = Integer.parseInt(arrayStr[1]);
 
-					isValidCommand = strCmd.equals("deposit") || strCmd.equals("withdraw") || strCmd.equals("transfer")
-							|| strCmd.equals("logout");
+					isValidCommand = strCmd.equals("deposit") || strCmd.equals("withdraw");
 				}else if(arrSize == 1){
 					strCmd = arrayStr[0].toLowerCase();
 					if(strCmd.equals("logout")) {
 						isValidCommand = true;					
 					}
+				}else if((arrSize == 3)){
+					strCmd = arrayStr[0].toLowerCase();
+					strNamaPenerima = arrayStr[1].toLowerCase();
+					custPenerima = findByNama(strNamaPenerima);
+					if(custPenerima == null) {
+						strError += "Error : Nama `" + strNamaPenerima + "` tidak ditemukan. ";
+					}
+					nominal = Integer.parseInt(arrayStr[2]);
+					if(nominal <= 0) {
+						strError += "Error : Nominal transfer salah.";
+					}					
+					isValidCommand = strCmd.equals("transfer") && (nominal != null) && (nominal > 0) && (custPenerima != null);
 				}else {
 					atm.printOutput("Invalid Command.."
-							+ "\nCommands : `deposit [nominal]`,`withdraw [nominal]`,`transfer [nama] [nominal]`,`logout`");
+							+ "\nCommands : `deposit [nominal]`,`withdraw [nominal]`,`transfer [nama] [nominal]`,`logout`.");
 					input = atm.custInputStr();
 					lanjut = true;					
 				}
@@ -160,9 +173,9 @@ public class ATMService {
 						input = "";
 						break;
 					// transfer
-					// case "transer":
-					// transfer(c);
-					// break;
+					case "transfer":
+						transfer(cust, custPenerima, nominal);
+						break;
 					// exit
 					case "logout":
 						lanjut = false;
@@ -171,21 +184,21 @@ public class ATMService {
 						break;
 					default:
 						atm.printOutput("Invalid Command.."
-								+ "\nCommands : `deposit [nominal]`,`withdraw [nominal]`,`transfer [nama] [nominal]`,`logout`");
+								+ "\nCommands : `deposit [nominal]`,`withdraw [nominal]`,`transfer [nama] [nominal]`,`logout`.");
 						input = atm.custInputStr();
 						lanjut = true;
 						break;
 					}					
 				}else {
-					atm.printOutput("Invalid Command.."
-							+ "\nCommands : `deposit [nominal]`,`withdraw [nominal]`,`transfer [nama] [nominal]`,`logout`");
+					atm.printOutput(strError
+							+ "\nCommands : `deposit [nominal]`,`withdraw [nominal]`,`transfer [nama] [nominal]`,`logout`.");
 					input = atm.custInputStr();
 					lanjut = true;					
 				}			
 			}catch(Exception e){
 				input = "";
 				atm.printOutput("Error : " + e.toString()
-						+ "\nCommands : `deposit [nominal]`,`withdraw [nominal]`,`transfer [nama] [nominal]`,`logout`");
+						+ "\nCommands : `deposit [nominal]`,`withdraw [nominal]`,`transfer [nama] [nominal]`,`logout`.");
 				//input = interf.custInputStr();
 				lanjut = true;			
 			}
@@ -230,7 +243,7 @@ public class ATMService {
 		   }
 	}
 	
-	public String transfer(Customer pengirim, Customer penerima, int amount, int type) {
-		return custService.transfer(pengirim, penerima, type, null);
+	public String transfer(Customer pengirim, Customer penerima, int nominal) {
+		return custService.transfer(pengirim, penerima, nominal);
 	}	
 }
